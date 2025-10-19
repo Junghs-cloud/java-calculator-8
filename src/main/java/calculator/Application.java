@@ -1,7 +1,9 @@
 package calculator;
 
+import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.IntStream;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static camp.nextstep.edu.missionutils.Console.readLine;
 
@@ -9,15 +11,22 @@ public class Application {
     public static void main(String[] args) {
         System.out.println("덧셈할 문자열을 입력해 주세요.");
         String userInput = readLine();
-        String basicDelimiterRegex = "[,:]+";
-        String[] operands = userInput.split(basicDelimiterRegex);
-        if (userInput.isEmpty()) {
-            System.out.println("결과 : 0");
+        ArrayList<String> delimiters = new ArrayList<>(Arrays.asList(",", ":"));
+        String customDelimiterRegex = "^//[^0-9]\\\\n.*";
+
+        if (Pattern.matches(customDelimiterRegex, userInput)) {
+            String customDelimiter = Character.toString(userInput.charAt(2));
+            delimiters.add(customDelimiter);
+            userInput = userInput.substring(5);
+            splitByDelimitersAndCalculate(userInput, delimiters);
         }
         else {
-            Vector<Integer> operandValues = getOperandValues(operands);
-            int sum  = operandValues.stream().mapToInt(Integer::intValue).sum();
-            System.out.println("결과 : " + sum);
+            if (userInput.isEmpty()) {
+                System.out.println("결과 : 0");
+            }
+            else {
+                splitByDelimitersAndCalculate(userInput, delimiters);
+            }
         }
     }
 
@@ -36,5 +45,13 @@ public class Application {
             throw new IllegalArgumentException();
         }
         return operandValues;
+    }
+
+    public static void splitByDelimitersAndCalculate(String input, ArrayList<String> delimiters) {
+        String delimiterRegex = delimiters.stream().collect(Collectors.joining("", "[", "]+"));
+        String[] operands = input.split(delimiterRegex);
+        Vector<Integer> operandValues = getOperandValues(operands);
+        int sum  = operandValues.stream().mapToInt(Integer::intValue).sum();
+        System.out.println("결과 : " + sum);
     }
 }
