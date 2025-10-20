@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CalculatorModel {
+    String customDelimiterRegex = "^//[^0-9]\\\\n.*";
 
     public int calculate(String userInput) {
         ArrayList<String> delimiters = new ArrayList<>(Arrays.asList(",", ":"));
-        String customDelimiterRegex = "^//[^0-9]\\\\n.*";
 
         if (Pattern.matches(customDelimiterRegex, userInput)) {
             String customDelimiter = Character.toString(userInput.charAt(2));
